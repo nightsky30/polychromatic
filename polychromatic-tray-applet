@@ -255,6 +255,20 @@ class AppIndicator(object):
                 else:
                     root.append(create_menu_item(state, False))
 
+            if self.active_device.has("lighting_left"):
+                state = common.get_effect_state_string(self._get_device_state("left", "effect"))
+                if multiple_sources:
+                    root.append(create_menu_item(_("Left Row") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
+            if self.active_device.has("lighting_right"):
+                state = common.get_effect_state_string(self._get_device_state("right", "effect"))
+                if multiple_sources:
+                    root.append(create_menu_item(_("Right Row") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
             root.append(create_seperator())
 
         if self.menu_brightness:
@@ -304,6 +318,30 @@ class AppIndicator(object):
                 else:
                     root.append(create_menu_item(state, False))
 
+            if self.active_device.has("lighting_left_brightness"):
+                try:
+                    # Check this
+                    state = str(int(self.active_device.fx.misc.left.brightness)) + "%"
+                except Exception:
+                    state = "---%"
+
+                if multiple_sources:
+                    root.append(create_menu_item(_("Left Row") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
+            if self.active_device.has("lighting_right_brightness"):
+                try:
+                    # Check this
+                    state = str(int(self.active_device.fx.misc.right.brightness)) + "%"
+                except Exception:
+                    state = "---%"
+
+                if multiple_sources:
+                    root.append(create_menu_item(_("Right Row") + ": " + state, False))
+                else:
+                    root.append(create_menu_item(state, False))
+
             if self.active_device.has("lighting_backlight_active"):
                 try:
                     if self.active_device.fx.misc.logo.active == 1:
@@ -330,6 +368,26 @@ class AppIndicator(object):
                         root.append(create_menu_item(_("Scroll Wheel") + ": " + _("Off"), False))
                 except Exception as e:
                     print("Skipping lighting_scroll_active due to exception:\n" + str(e))
+
+            if self.active_device.has("lighting_left_active"):
+                try:
+                    # Check this
+                    if self.active_device.fx.misc.left.active == 1:
+                        root.append(create_menu_item(_("Left Row") + ": " + _("On"), False))
+                    else:
+                        root.append(create_menu_item(_("Left Row") + ": " + _("Off"), False))
+                except Exception as e:
+                    print("Skipping lighting_left_active due to exception:\n" + str(e))
+
+            if self.active_device.has("lighting_right_active"):
+                try:
+                    # Check this
+                    if self.active_device.fx.misc.right.active == 1:
+                        root.append(create_menu_item(_("Right Row") + ": " + _("On"), False))
+                    else:
+                        root.append(create_menu_item(_("Right Row") + ": " + _("Off"), False))
+                except Exception as e:
+                    print("Skipping lighting_right_active due to exception:\n" + str(e))
 
             root.append(create_seperator())
 
@@ -489,10 +547,22 @@ class AppIndicator(object):
         else:
             scroll_submenu = None
 
+        if self.active_device.has("lighting_left"):
+            left_submenu = create_submenu("Left Row", True)
+        else:
+            left_submenu = None
+
+        if self.active_device.has("lighting_right"):
+            right_submenu = create_submenu("Right Row", True)
+        else:
+            right_submenu = None
+
         # Disable menu if device has no light sources to set
         if not self.active_device.has("lighting") and \
            not self.active_device.has("lighting_logo") and \
            not self.active_device.has("lighting_scroll") and \
+           not self.active_device.has("lighting_left") and \
+           not self.active_device.has("lighting_right") and \
            not self.active_device.has("lighting_backlight"):
             return None
 
@@ -522,6 +592,7 @@ class AppIndicator(object):
             # Logo Lighting
             [logo_submenu, "lighting_logo_none", ["logo", "none"], "none", _("None")],
             [logo_submenu, "lighting_logo_spectrum", ["logo", "spectrum"], "spectrum", _("Spectrum")],
+            [logo_submenu, "lighting_logo_wave", ["logo", "wave"], "wave", _("Wave")],
             [logo_submenu, "lighting_logo_blinking", ["logo", "blinking"], "blinking", _("Blinking")],
             [logo_submenu, "lighting_logo_breath_random", ["logo", "breath", "random"], "breath", _("Breath (Random)")],
             [logo_submenu, "lighting_logo_breath_single", ["logo", "breath", "single"], "breath", _("Breath (Single)")],
@@ -536,6 +607,7 @@ class AppIndicator(object):
             # Scroll Lighting
             [scroll_submenu, "lighting_scroll_none", ["scroll", "none"], "none", _("None")],
             [scroll_submenu, "lighting_scroll_spectrum", ["scroll", "spectrum"], "spectrum", _("Spectrum")],
+            [scroll_submenu, "lighting_scroll_wave", ["scroll", "wave"], "wave", _("Wave")],
             [scroll_submenu, "lighting_scroll_blinking", ["scroll", "blinking"], "blinking", _("Blinking")],
             [scroll_submenu, "lighting_scroll_breath_random", ["scroll", "breath", "random"], "breath", _("Breath (Random)")],
             [scroll_submenu, "lighting_scroll_breath_single", ["scroll", "breath", "single"], "breath", _("Breath (Single)")],
@@ -545,13 +617,46 @@ class AppIndicator(object):
             [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "med"], "reactive", _("Reactive (Medium)")],
             [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "slow"], "reactive", _("Reactive (Slow)")],
             [scroll_submenu, "lighting_scroll_reactive", ["scroll", "reactive", "vslow"], "reactive", _("Reactive (Very Slow)")],
-            [scroll_submenu, "lighting_scroll_static", ["scroll", "static"], "static", _("Static")]
+            [scroll_submenu, "lighting_scroll_static", ["scroll", "static"], "static", _("Static")],
+
+            # Left Row Lighting
+            [left_submenu, "lighting_left_none", ["left", "none"], "none", _("None")],
+            [left_submenu, "lighting_left_spectrum", ["left", "spectrum"], "spectrum", _("Spectrum")],
+            [left_submenu, "lighting_left_wave", ["left", "wave"], "wave", _("Wave")],
+            [left_submenu, "lighting_left_blinking", ["left", "blinking"], "blinking", _("Blinking")],
+            [left_submenu, "lighting_left_breath_random", ["left", "breath", "random"], "breath", _("Breath (Random)")],
+            [left_submenu, "lighting_left_breath_single", ["left", "breath", "single"], "breath", _("Breath (Single)")],
+            [left_submenu, "lighting_left_breath_dual", ["left", "breath", "dual"], "breath", _("Breath (Dual)")],
+            [left_submenu, "lighting_left_pulsate", ["left", "pulsate"], "pulsate", _("Pulsate")],
+            [left_submenu, "lighting_left_reactive", ["left", "reactive", "fast"], "reactive", _("Reactive (Fast)")],
+            [left_submenu, "lighting_left_reactive", ["left", "reactive", "med"], "reactive", _("Reactive (Medium)")],
+            [left_submenu, "lighting_left_reactive", ["left", "reactive", "slow"], "reactive", _("Reactive (Slow)")],
+            [left_submenu, "lighting_left_reactive", ["left", "reactive", "vslow"], "reactive", _("Reactive (Very Slow)")],
+            [left_submenu, "lighting_left_static", ["left", "static"], "static", _("Static")],
+
+            # Right Row Lighting
+            [right_submenu, "lighting_right_none", ["right", "none"], "none", _("None")],
+            [right_submenu, "lighting_right_spectrum", ["right", "spectrum"], "spectrum", _("Spectrum")],
+            [right_submenu, "lighting_right_wave", ["right", "wave"], "wave", _("Wave")],
+            [right_submenu, "lighting_right_blinking", ["right", "blinking"], "blinking", _("Blinking")],
+            [right_submenu, "lighting_right_breath_random", ["right", "breath", "random"], "breath", _("Breath (Random)")],
+            [right_submenu, "lighting_right_breath_single", ["right", "breath", "single"], "breath", _("Breath (Single)")],
+            [right_submenu, "lighting_right_breath_dual", ["right", "breath", "dual"], "breath", _("Breath (Dual)")],
+            [right_submenu, "lighting_right_pulsate", ["right", "pulsate"], "pulsate", _("Pulsate")],
+            [right_submenu, "lighting_right_reactive", ["right", "reactive", "fast"], "reactive", _("Reactive (Fast)")],
+            [right_submenu, "lighting_right_reactive", ["right", "reactive", "med"], "reactive", _("Reactive (Medium)")],
+            [right_submenu, "lighting_right_reactive", ["right", "reactive", "slow"], "reactive", _("Reactive (Slow)")],
+            [right_submenu, "lighting_right_reactive", ["right", "reactive", "vslow"], "reactive", _("Reactive (Very Slow)")],
+            [right_submenu, "lighting_right_static", ["right", "static"], "static", _("Static")]
+
         ]
 
         has_items = {
             "main": False,
             "logo": False,
-            "scroll": False
+            "scroll": False,
+            "left": False,
+            "right": False
         }
 
         for fx in fx_list:
@@ -569,7 +674,7 @@ class AppIndicator(object):
                 else:
                     root_submenu[1].append(create_menu_item(label, True, cb.set_effect, callback, icon_path))
 
-        if multiple_menus and not has_items["main"] and not has_items["logo"] and not has_items["scroll"]:
+        if multiple_menus and not has_items["main"] and not has_items["logo"] and not has_items["scroll"] and not has_items["left"] and not has_items["right"]:
             return None
 
         if multiple_menus and main_submenu and has_items["main"]:
@@ -583,6 +688,12 @@ class AppIndicator(object):
 
         if multiple_menus and scroll_submenu and has_items["scroll"]:
             root_submenu[1].append(scroll_submenu[0])
+
+        if multiple_menus and left_submenu and has_items["left"]:
+            root_submenu[1].append(left_submenu[0])
+
+        if multiple_menus and right_submenu and has_items["right"]:
+            root_submenu[1].append(right_submenu[0])
 
         return root_submenu[0]
 
@@ -610,6 +721,16 @@ class AppIndicator(object):
         else:
             scroll_submenu = None
 
+        if self.active_device.has("lighting_left_brightness") or self.active_device.has("lighting_left_active"):
+            left_submenu = create_submenu("Left Row", True)
+        else:
+            left_submenu = None
+
+        if self.active_device.has("lighting_right_brightness") or self.active_device.has("lighting_right_active"):
+            right_submenu = create_submenu("Right Row", True)
+        else:
+            right_submenu = None
+
         # Disable menu if device has no light sources to set
         if not self.active_device.has("brightness") and \
            not self.active_device.has("lighting_backlight_brightness") and \
@@ -617,7 +738,11 @@ class AppIndicator(object):
            not self.active_device.has("lighting_logo_brightness") and \
            not self.active_device.has("lighting_logo_active") and \
            not self.active_device.has("lighting_scroll_brightness") and \
-           not self.active_device.has("lighting_scroll_active"):
+           not self.active_device.has("lighting_scroll_active") and \
+           not self.active_device.has("lighting_left_brightness") and \
+           not self.active_device.has("lighting_left_active") and \
+           not self.active_device.has("lighting_right_brightness") and \
+           not self.active_device.has("lighting_right_active"):
             return None
 
         # Have multiple sub-menus if there are multiple light sources
@@ -672,6 +797,30 @@ class AppIndicator(object):
             target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["scroll", 25]))
             target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["scroll", 0]))
 
+        if self.active_device.has("lighting_left_brightness"):
+            if multiple_menus:
+                target_submenu = left_submenu
+            else:
+                target_submenu = root_submenu
+
+            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["left", 100]))
+            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["left", 75]))
+            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["left", 50]))
+            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["left", 25]))
+            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["left", 0]))
+
+        if self.active_device.has("lighting_right_brightness"):
+            if multiple_menus:
+                target_submenu = right_submenu
+            else:
+                target_submenu = root_submenu
+
+            target_submenu[1].append(create_menu_item(_("Full (100%)"), True, cb.set_brightness, ["right", 100]))
+            target_submenu[1].append(create_menu_item(_("Bright (75%)"), True, cb.set_brightness, ["right", 75]))
+            target_submenu[1].append(create_menu_item(_("Medium (50%)"), True, cb.set_brightness, ["right", 50]))
+            target_submenu[1].append(create_menu_item(_("Dim (25%)"), True, cb.set_brightness, ["right", 25]))
+            target_submenu[1].append(create_menu_item(_("Off (0%)"), True, cb.set_brightness, ["right", 0]))
+
         # Only show on/off options if the device only supports that.
         if self.active_device.has("lighting_backlight_active"):
             backlight_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["backlight", 1]))
@@ -688,6 +837,16 @@ class AppIndicator(object):
             scroll_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["scroll", 0]))
             multiple_menus = True
 
+        if self.active_device.has("lighting_left_active"):
+            left_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["left", 1]))
+            left_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["left", 0]))
+            multiple_menus = True
+
+        if self.active_device.has("lighting_right_active"):
+            right_submenu[1].append(create_menu_item(_("On"), True, cb.set_brightness_toggle, ["right", 1]))
+            right_submenu[1].append(create_menu_item(_("Off"), True, cb.set_brightness_toggle, ["right", 0]))
+            multiple_menus = True
+
         if multiple_menus and main_submenu:
             root_submenu[1].append(main_submenu[0])
 
@@ -699,6 +858,12 @@ class AppIndicator(object):
 
         if multiple_menus and scroll_submenu:
             root_submenu[1].append(scroll_submenu[0])
+            
+        if multiple_menus and left_submenu:
+            root_submenu[1].append(left_submenu[0])
+
+        if multiple_menus and right_submenu:
+            root_submenu[1].append(right_submenu[0])
 
         return root_submenu[0]
 

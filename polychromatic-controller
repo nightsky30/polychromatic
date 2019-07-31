@@ -1303,7 +1303,7 @@ class Controller(object):
                 # Compile status data together (for multiple light sources)
                 buffer_effect = ""
                 buffer_brightness = ""
-                for source in ["main", "backlight", "logo", "scroll"]:
+                for source in ["main", "backlight", "logo", "scroll", "left", "right"]:
                     if source == "main":
                         capability = "lighting"
                     else:
@@ -1323,6 +1323,10 @@ class Controller(object):
                                 turned_on = device.fx.misc.logo.active
                             elif source == "scroll":
                                 turned_on = device.fx.misc.scroll_wheel.active
+                            elif source == "left":
+                                turned_on = device.fx.misc.left.active
+                            elif source == "right":
+                                turned_on = device.fx.misc.right.active
 
                             if turned_on:
                                 current_brightness = _("On")
@@ -1339,6 +1343,10 @@ class Controller(object):
                                 current_brightness = str(int(device.fx.misc.logo.brightness)) + "%"
                             elif source == "scroll":
                                 current_brightness = str(int(device.fx.misc.scroll_wheel.brightness)) + "%"
+                            elif source == "left":
+                                current_brightness = str(int(device.fx.misc.left.brightness)) + "%"
+                            elif source == "right":
+                                current_brightness = str(int(device.fx.misc.right.brightness)) + "%"
 
                     except:
                         current_brightness = None
@@ -1424,9 +1432,9 @@ class Controller(object):
         device_name = str(self.active_device.name)
         device_type = self.active_device.type
         device_image = self.get_device_image(self.active_device, "actual", "perspective_img")
-        effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll")]
-        brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness")]
-        brightness_active_support = [self.active_device.has("lighting_backlight_active"), self.active_device.has("lighting_logo_active"), self.active_device.has("lighting_scroll_active")]
+        effect_support = [self.active_device.has("lighting"), self.active_device.has("lighting_logo"), self.active_device.has("lighting_scroll"), self.active_device.has("lighting_left"), self.active_device.has("lighting_right")]
+        brightness_support = [self.active_device.has("brightness"), self.active_device.has("lighting_logo_brightness"), self.active_device.has("lighting_scroll_brightness"), self.active_device.has("lighting_left_brightness"), self.active_device.has("lighting_right_brightness")]
+        brightness_active_support = [self.active_device.has("lighting_backlight_active"), self.active_device.has("lighting_logo_active"), self.active_device.has("lighting_scroll_active"), self.active_device.has("lighting_left_active"), self.active_device.has("lighting_right_active")]
         # 'backlight' missing from effect list as unused by devices.
 
         # Update GUI
@@ -1546,6 +1554,50 @@ class Controller(object):
             else:
                 self.update_page("#lighting-scroll-dropdown", "hide")
 
+            if self.active_device.has("lighting_left"):
+                self.update_page("#lighting-left-dropdown", "show")
+                self.update_page("#lighting-left-list", "html", " ")
+                self.update_background_header(pref.get_device_state(self.active_device.serial, "left", "colour_primary"))
+                fx_list = [
+                    # [has() parameter, icon/command, human string]
+                    ["lighting_left_none", "none", _("None")],
+                    ["lighting_left_blinking", "blinking", _("Blinking")],
+                    ["lighting_left_spectrum", "spectrum", _("Spectrum")],
+                    ["lighting_left_wave", "wave", _("Wave")],
+                    ["lighting_left_reactive", "reactive", _("Reactive")],
+                    ["lighting_left_pulsate", "pulsate", _("Pulsate")],
+                    ["lighting_left_static", "static", _("Static")]
+                ]
+
+                for fx in fx_list:
+                    if self.active_device.has(fx[0]):
+                        add_to_dropdown("#lighting-left-list", fx[1], fx[2], "left")
+
+            else:
+                self.update_page("#lighting-left-dropdown", "hide")
+
+            if self.active_device.has("lighting_right"):
+                self.update_page("#lighting-right-dropdown", "show")
+                self.update_page("#lighting-right-list", "html", " ")
+                self.update_background_header(pref.get_device_state(self.active_device.serial, "right", "colour_primary"))
+                fx_list = [
+                    # [has() parameter, icon/command, human string]
+                    ["lighting_right_none", "none", _("None")],
+                    ["lighting_right_blinking", "blinking", _("Blinking")],
+                    ["lighting_right_spectrum", "spectrum", _("Spectrum")],
+                    ["lighting_right_wave", "wave", _("Wave")],
+                    ["lighting_right_reactive", "reactive", _("Reactive")],
+                    ["lighting_right_pulsate", "pulsate", _("Pulsate")],
+                    ["lighting_right_static", "static", _("Static")]
+                ]
+
+                for fx in fx_list:
+                    if self.active_device.has(fx[0]):
+                        add_to_dropdown("#lighting-right-list", fx[1], fx[2], "right")
+
+            else:
+                self.update_page("#lighting-right-dropdown", "hide")
+
         else:
             self.update_page("#fx-lighting", "hide")
 
@@ -1565,6 +1617,14 @@ class Controller(object):
             if self.active_device.has("lighting_scroll_brightness"):
                 dbg.stdout("Device supports 'lighting_scroll_brightness'", dbg.debug, 1)
                 self.update_page("#brightness-scroll", "show")
+
+            if self.active_device.has("lighting_left_brightness"):
+                dbg.stdout("Device supports 'lighting_left_brightness'", dbg.debug, 1)
+                self.update_page("#brightness-left", "show")
+
+            if self.active_device.has("lighting_right_brightness"):
+                dbg.stdout("Device supports 'lighting_right_brightness'", dbg.debug, 1)
+                self.update_page("#brightness-right", "show")
         else:
             self.update_page("#fx-brightness", "hide")
 
@@ -1584,6 +1644,14 @@ class Controller(object):
             if self.active_device.has("lighting_scroll_active"):
                 dbg.stdout("Device supports 'lighting_scroll_active'", dbg.debug, 1)
                 self.update_page("#brightness-scroll-toggle", "show")
+
+            if self.active_device.has("lighting_left_active"):
+                dbg.stdout("Device supports 'lighting_left_active'", dbg.debug, 1)
+                self.update_page("#brightness-left-toggle", "show")
+
+            if self.active_device.has("lighting_right_active"):
+                dbg.stdout("Device supports 'lighting_right_active'", dbg.debug, 1)
+                self.update_page("#brightness-right-toggle", "show")
 
         # Mouse DPI
         if self.active_device.has("dpi"):
@@ -1644,6 +1712,24 @@ class Controller(object):
             except Exception as e:
                 self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
 
+        if self.active_device.has("lighting_left_active"):
+            try:
+                if self.active_device.fx.misc.left.active == 1:
+                    self.update_page("#brightness-left-switch", "prop", "checked", "true")
+                else:
+                    self.update_page("#brightness-left-switch", "removeAttr", "checked")
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
+
+        if self.active_device.has("lighting_right_active"):
+            try:
+                if self.active_device.fx.misc.right.active == 1:
+                    self.update_page("#brightness-right-switch", "prop", "checked", "true")
+                else:
+                    self.update_page("#brightness-right-switch", "removeAttr", "checked")
+            except Exception as e:
+                self.print_error(str(e), _("There was a problem communicating with the daemon for this device."))
+
         ## Brightness
         if self.active_device.has("brightness"):
             set_brightness_control("#brightness-normal", self.active_device.brightness)
@@ -1653,6 +1739,12 @@ class Controller(object):
 
         if self.active_device.has("lighting_scroll_brightness"):
             set_brightness_control("#brightness-scroll", self.active_device.fx.misc.scroll_wheel.brightness)
+
+        if self.active_device.has("lighting_left_brightness"):
+            set_brightness_control("#brightness-left", self.active_device.fx.misc.left.brightness)
+
+        if self.active_device.has("lighting_right_brightness"):
+            set_brightness_control("#brightness-right", self.active_device.fx.misc.right.brightness)
 
         ## Lighting Effects
         self.update_page("#fx-colour-primary", "hide")
@@ -1720,6 +1812,36 @@ class Controller(object):
                 update_lighting_dropdown("#active-effect-scroll", "unknown")
                 self.update_lighting_options("scroll", effect)
 
+        if self.active_device.has("lighting_left"):
+            try:
+                effect = pref.get_device_state(self.active_device.serial, "left", "effect")
+
+                # Device Tab
+                update_lighting_dropdown("#active-effect-left", effect)
+
+                # Overview Screen
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
+
+            except TypeError:
+                update_lighting_dropdown("#active-effect-left", "unknown")
+                self.update_lighting_options("left", effect)
+
+        if self.active_device.has("lighting_right"):
+            try:
+                effect = pref.get_device_state(self.active_device.serial, "right", "effect")
+
+                # Device Tab
+                update_lighting_dropdown("#active-effect-right", effect)
+
+                # Overview Screen
+                self.update_page("#device-"+self.active_device_serial+"-effect > span", "append", "&nbsp;" + common.get_effect_state_string(effect))
+                self.update_page("#device-"+self.active_device_serial+"-effect > img", "attr", "src", "../img/effects/" + effect + ".svg")
+
+            except TypeError:
+                update_lighting_dropdown("#active-effect-right", "unknown")
+                self.update_lighting_options("right", effect)
+
         ## DPI Sensitivity
         if self.active_device.has("dpi"):
             try:
@@ -1778,6 +1900,10 @@ class Controller(object):
             source_has_string = "lighting_logo_"
         elif source == "scroll":
             source_has_string = "lighting_scroll_"
+        elif source == "left":
+            source_has_string = "lighting_left_"
+        elif source == "right":
+            source_has_string = "lighting_right_"
 
         # Template for adding option controls to page
         def add_radio_option(label, param):

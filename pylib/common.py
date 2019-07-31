@@ -97,9 +97,11 @@ def has_multiple_sources(device_obj):
     backlight_light = device_obj.has("lighting_backlight")
     logo_light = device_obj.has("lighting_logo")
     scroll_light = device_obj.has("lighting_scroll")
+    left_light = device_obj.has("lighting_left")
+    right_light = device_obj.has("lighting_right")
 
     light_sources = 0
-    for value in [main_light, backlight_light, logo_light, scroll_light]:
+    for value in [main_light, backlight_light, logo_light, scroll_light, left_light, right_light]:
         if value == True:
             light_sources += 1
 
@@ -177,6 +179,12 @@ def set_lighting_effect(pref, device_object, source, effect, fx_params=None):
 
     elif source == "scroll":
         fx = device_object.fx.misc.scroll_wheel
+
+    elif source == "left":
+        fx = device_object.fx.misc.left
+
+    elif source == "right":
+        fx = device_object.fx.misc.right
 
     # Determine colours
     primary_colours = pref.get_device_state(serial, source, "colour_primary")
@@ -328,6 +336,24 @@ def set_brightness(pref, device_object, source, value):
         else:
             device_object.fx.misc.scroll_wheel.brightness = int(value)
 
+    elif source == "left":
+        if value == "toggle":
+            if device_object.fx.misc.left.active == True:
+                device_object.fx.misc.left.active = False
+            else:
+                device_object.fx.misc.left.active = True
+        else:
+            device_object.fx.misc.left.brightness = int(value)
+
+    elif source == "right":
+        if value == "toggle":
+            if device_object.fx.misc.right.active == True:
+                device_object.fx.misc.right.active = False
+            else:
+                device_object.fx.misc.right.active = True
+        else:
+            device_object.fx.misc.right.brightness = int(value)
+
     if value != "toggle":
         pref.set_device_state(device_object.serial, source, "brightness", int(value))
 
@@ -347,6 +373,12 @@ def set_brightness_toggle(pref, device_object, source, state):
 
     elif source == "scroll":
         source_obj = device_object.fx.misc.scroll_wheel
+
+    elif source == "left":
+        source_obj = device_object.fx.misc.left
+
+    elif source == "right":
+        source_obj = device_object.fx.misc.right
 
     if str(state) == "toggle":
         if source_obj.active == True:
@@ -375,6 +407,8 @@ def repeat_last_effect(pref, device_object):
     replay_source("backlight", "lighting_backlight")
     replay_source("logo", "lighting_logo")
     replay_source("scroll", "lighting_scroll")
+    replay_source("left", "lighting_left")
+    replay_source("right", "lighting_right")
 
 
 def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
@@ -396,6 +430,8 @@ def save_colours_to_all_sources(pref, device_object, colour_name, colour_set):
     save_colour("backlight", "lighting_backlight")
     save_colour("logo", "lighting_logo")
     save_colour("scroll", "lighting_scroll")
+    save_colour("left", "lighting_left")
+    save_colour("right", "lighting_right")
 
 
 def get_green_shades():
