@@ -1513,6 +1513,7 @@ class Controller(object):
                     ["lighting_logo_spectrum", "spectrum", _("Spectrum")],
                     ["lighting_logo_wave", "wave", _("Wave")],
                     ["lighting_logo_reactive", "reactive", _("Reactive")],
+                    ["lighting_logo_breath_single", "breath", _("Breath")],
                     ["lighting_logo_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_logo_static", "static", _("Static")]
                 ]
@@ -1565,6 +1566,7 @@ class Controller(object):
                     ["lighting_left_spectrum", "spectrum", _("Spectrum")],
                     ["lighting_left_wave", "wave", _("Wave")],
                     ["lighting_left_reactive", "reactive", _("Reactive")],
+                    ["lighting_left_breath_single", "breath", _("Breath")],
                     ["lighting_left_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_left_static", "static", _("Static")]
                 ]
@@ -1587,6 +1589,7 @@ class Controller(object):
                     ["lighting_right_spectrum", "spectrum", _("Spectrum")],
                     ["lighting_right_wave", "wave", _("Wave")],
                     ["lighting_right_reactive", "reactive", _("Reactive")],
+                    ["lighting_right_breath_single", "breath", _("Breath")],
                     ["lighting_right_pulsate", "pulsate", _("Pulsate")],
                     ["lighting_right_static", "static", _("Static")]
                 ]
